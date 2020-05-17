@@ -112,6 +112,7 @@ class noSQLite:
     def drop_collection(self,collection):
         self.conn.execute(f'DROP TABLE `{collection}`')
         self.conn.commit()
+        self.collection_lst()
     
     def delete_records(self,collection,condition):
         sql = f"DELETE from `{collection}` where {condition}"
