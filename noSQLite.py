@@ -39,14 +39,13 @@ class noSQLite:
         tbl_fields = tbl_fields[:-2].replace('text','')
         columns = list(pd.read_sql_query("select * from '{}'".format(collection), self.conn).columns)
         
-        columns_to_add = ''
         for r in list(records.keys()):
             if r not in columns:
                 self.conn.execute("ALTER TABLE '{0}' ADD COLUMN '{1}' text".format(collection, r))
-                self.conn.commit()
+                #self.conn.commit()
         
         self.conn.execute("INSERT INTO '{0}' ({1}) values ({2})".format(collection, tbl_fields, str(list(records.values()))[1:-1]))
-        self.conn.commit()
+        #self.conn.commit()
         self.collection_lst()
     
     def retrieve_df(self, sql):
@@ -109,20 +108,24 @@ class noSQLite:
         sql = f"select rowid, * from `{collection}` where {condition}"
         return self.retrieve_df(sql)
     
+    def commit(self):
+        self.conn.commit()
+        self.collection_lst()
+
     def drop_collection(self,collection):
         self.conn.execute(f'DROP TABLE `{collection}`')
-        self.conn.commit()
+        #self.conn.commit()
         self.collection_lst()
     
     def delete_records(self,collection,condition):
         sql = f"DELETE from `{collection}` where {condition}"
         self.conn.execute(sql)
-        self.conn.commit()
+        #self.conn.commit()
         
     def update_records(self,collection,set_values,condition):
         sql = f"UPDATE `{collection}` SET {set_values} where {condition}"
         self.conn.execute(sql)
-        self.conn.commit()
+        #self.conn.commit()
         
     def remove_null_columns(self): #null columns cannot be dropped due to limited functionality of sqlite
         import pandas as pd
