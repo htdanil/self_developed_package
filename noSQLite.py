@@ -132,7 +132,19 @@ class noSQLite:
         #self.conn.commit()
         
     def update_records(self,collection,set_values,condition):
+        import pandas as pd
+        columns = list(pd.read_sql_query("select * from '{}'".format(collection), self.conn).columns)
+               
+        set_columns = []
+        for s in set_values.split('and'):
+            set_columns.append(s.split('=')[0].strip().replace('`','').replace("'",'').replace('"',''))
+        
+        for r in set_columns:
+            if r not in columns:
+                self.conn.execute("ALTER TABLE '{0}' ADD COLUMN '{1}' text".format(collection, r))
+        
         sql = f"UPDATE `{collection}` SET {set_values} where {condition}"
+
         self.conn.execute(sql)
         #self.conn.commit()
         
