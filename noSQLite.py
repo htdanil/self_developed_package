@@ -21,11 +21,20 @@ class noSQLite:
         self.collection_list = list(pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", self.conn)['name'])
     
     def insert_many_records(self,collection, records): #insert many records
+        if 'str' in str(type(records)):
+            import json
+            records = json.loads(records)
+            
         for r in records:
             self.insert_record(collection,r)
     
     def insert_record(self, collection, records): #insert single record
         import pandas as pd
+
+        if 'str' in str(type(records)):
+            import json
+            records = json.loads(records)
+
         self.collection_lst()
         records = self.get_1D_dict(records)
         tbl_fields = ''
