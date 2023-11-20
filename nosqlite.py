@@ -121,6 +121,9 @@ class noSQLite:
         self.conn.commit()
         self.collection_lst()
 
+    def rollback(self):
+        self.conn.rollback()
+
     def drop_collection(self,collection):
         self.conn.execute(f'DROP TABLE `{collection}`')
         #self.conn.commit()
