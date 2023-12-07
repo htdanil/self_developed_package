@@ -224,6 +224,7 @@ def bs2ad_str(bs_date):
 ###########################################################################################################################################################################
 import requests
 import json
+import base64
 
 class webVar:
   def __init__(self, web_url, var_collection):
@@ -231,6 +232,7 @@ class webVar:
     self.var_collection = var_collection
 
   def push(self, var_name, data):
+    data_encoded = base64.b64encode(data.encode('utf-8')).decode()
     x = {"db" : "webVar.db",
          "actions" : [
             {
@@ -238,7 +240,7 @@ class webVar:
                 "collection" : self.var_collection,
                 "records" : [
                     {"var_name" : var_name,
-                     "data" : data}
+                     "data" : data_encoded }
                 ]
             }
          ]
@@ -281,7 +283,7 @@ class webVar:
     if response['status'] == 'FAILED' or len(response['data']) ==0 :
       print("No variable found : " + str(response))
     else:
-      return response['data'][0]['data']
+      return base64.b64decode(response['data'][0]['data']).decode('utf-8')
 
   def get_all(self):
     x = {"db" : "webVar.db",
