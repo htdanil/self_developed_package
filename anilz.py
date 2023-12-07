@@ -212,3 +212,106 @@ def bs2ad(bs_date):
         
 def bs2ad_str(bs_date):
     return str(bs2ad(bs_date))
+
+
+
+
+
+
+
+###########################################################################################################################################################################
+# webVar class for storing data/variables to the web where [ROOT\Anil\Python App\MISC_PYTHON_GIT\noSQLite api (simplified with commit functionality)] is hosted.
+###########################################################################################################################################################################
+import requests
+import json
+
+class webVar:
+  def __init__(self, web_url, var_collection):
+    self.web_url = web_url
+    self.var_collection = var_collection
+
+  def push(self, var_name, data):
+    x = {"db" : "webVar.db",
+         "actions" : [
+            {
+                "type" : "insert",
+                "collection" : self.var_collection,
+                "records" : [
+                    {"var_name" : var_name,
+                     "data" : data}
+                ]
+            }
+         ]
+    }
+
+    self.drop(var_name)
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.web_url+"/api/records", data=json.dumps(x), headers=headers).json()
+    self.response = response
+
+    if response['status'] == 'FAILED':
+      print(response)
+
+  def drop(self, var_name):
+    x = {"db" : "webVar.db",
+         "actions" : [
+            {
+                "type" : "delete",
+                "collection" : self.var_collection,
+                "condition" : f"var_name == '{var_name}'"
+            }
+         ]
+    }
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.web_url+"/api/records", data=json.dumps(x), headers=headers).json()
+    self.response = response
+
+  def get(self, var_name):
+    x = {"db" : "webVar.db",
+     "collection" : self.var_collection,
+     "condition" : f"var_name == '{var_name}'"
+    }
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.web_url+"/api/select", data=json.dumps(x), headers=headers).json()
+    self.response = response
+
+    if response['status'] == 'FAILED' or len(response['data']) ==0 :
+      print("No variable found : " + str(response))
+    else:
+      return response['data'][0]['data']
+
+  def get_all(self):
+    x = {"db" : "webVar.db",
+      "collection" : self.var_collection
+    }
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.web_url+"/api/get", data=json.dumps(x), headers=headers).json()
+    self.response = response
+
+    if response['status'] == 'FAILED' or len(response['data']) ==0 :
+      print("No variable found : " + str(response))
+    else:
+      return response['data']
+  
+  def list_var_collection(self):
+    x = {"db" : "webVar.db"}
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.web_url+"/api/collection_list", data=json.dumps(x), headers=headers).json()
+    self.response = response
+    print(response)
+
+  
+  def drop_var_collection(self, var_collection):
+    x = {"db" : "webVar.db",
+      "collection" : var_collection
+    }
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.web_url+"/api/drop", data=json.dumps(x), headers=headers).json()
+    self.response = response
+    print(response)
