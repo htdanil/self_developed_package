@@ -265,6 +265,7 @@ class webVar:
     self.var_collection = var_collection
     self.password = ''
     self.salt = 'thisisarandomsalt 134342423jj234j34j2**999***34j234jj234j43j34'
+    requests.get(self.web_url + "/webVar_vacuum") #for reclaiming unused space of webVar.db database
 
   def push(self, var_name, data):   
     if self.password == '':
