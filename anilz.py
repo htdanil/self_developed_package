@@ -216,6 +216,39 @@ def bs2ad_str(bs_date):
 
 
 
+###########################################################################################################################################################################
+# encryptDecrypt class for symmetric encryption of text using passowrd and salt.
+###########################################################################################################################################################################
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+import base64
+
+class encryptDecrypt:
+  def __init__(self, password, salt):
+    self.password = password
+    self.salt = salt
+    
+    self.key = self.derive_key_from_password()
+    self.fernet = Fernet(self.key)
+
+  def derive_key_from_password(self):
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        salt= self.salt.encode(),
+        iterations=100000,
+        length=32,
+        backend=default_backend()
+    )
+    key = kdf.derive(self.password.encode())
+    return base64.b64encode(key)
+  
+  def encrypt(self, message):
+    return self.fernet.encrypt(message.encode())
+
+  def decrypt(self, message):
+    return self.fernet.decrypt(message).decode()
 
 
 
@@ -230,9 +263,16 @@ class webVar:
   def __init__(self, web_url, var_collection):
     self.web_url = web_url
     self.var_collection = var_collection
+    self.password = ''
+    self.salt = 'thisisarandomsalt 134342423jj234j34j2**999***34j234jj234j43j34'
 
-  def push(self, var_name, data):
-    data_encoded = base64.b64encode(data.encode('utf-8')).decode()
+  def push(self, var_name, data):   
+    if self.password == '':
+      data_encoded = base64.b64encode(data.encode('utf-8')).decode()
+    else:
+      ed = encryptDecrypt(self.password, self.salt)
+      data_encoded = ed.encrypt(data).decode()
+
     x = {"db" : "webVar.db",
          "actions" : [
             {
@@ -283,7 +323,12 @@ class webVar:
     if response['status'] == 'FAILED' or len(response['data']) ==0 :
       print("No variable found : " + str(response))
     else:
-      return base64.b64decode(response['data'][0]['data']).decode('utf-8')
+      resp = response['data'][0]['data']
+      if self.password == '':
+        return base64.b64decode(resp).decode('utf-8')
+      else:
+        ed = encryptDecrypt(self.password, self.salt)
+        return ed.decrypt(resp.encode())
 
   def get_all(self):
     x = {"db" : "webVar.db",
