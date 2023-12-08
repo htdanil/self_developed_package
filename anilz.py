@@ -363,3 +363,43 @@ class webVar:
     response = requests.post(self.web_url+"/api/drop", data=json.dumps(x), headers=headers).json()
     self.response = response
     print(response)
+
+
+###########################################################################################################################################################################
+# webVarGSheet class for storing data/variables to google sheets
+###########################################################################################################################################################################
+import requests
+import json
+
+class webVarGSheet:
+  def __init__(self):
+    self.url = "https://script.google.com/macros/s/AKfycbxH4b06ER2wF1fHmmie4SBjchbKUDA7zlI11ls2OHOafnfAXMFp7_vE3XxutVkHy1CRaA/exec" # webVarGSheet script under me@shresthaanil.com.np https://script.google.com/home/projects/1lkxm30B0NBndTsIxFrt0iRDsnsaMp-0sz2mB5Anyc-ZDdC9PSwKdoOpm/edit
+    self.sheetId = '1kQ400rot1WFF2I3Z-XWI-_oTXCdrB9DTuEiMfaLWN_U' # webVarGSheet database gsheet under misc folder under me@shresthaanil.com.np
+    self.sheetName = 'Sheet1'
+
+  def push(self, cellAddress, cellValue):
+    x = {
+          "sheetId" : self.sheetId,
+          "sheetName" : self.sheetName,
+          "cellAddress" : cellAddress,
+          "cellValue" : cellValue
+        }
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.url, data=json.dumps(x), headers=headers)
+    return ''
+
+  def get(self,cellAddress):
+    
+    # this get method will also work
+    # return requests.get("{}?sheetId={}&sheetName={}&cellAddress={}".format(self.url, self.sheetId, self.sheetName, cellAddress)).text
+
+    x = {
+      "sheetId" : self.sheetId,
+      "sheetName" : self.sheetName,
+      "cellAddress" : cellAddress
+    }
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.url, data=json.dumps(x), headers=headers)
+    return response.text
