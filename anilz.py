@@ -403,3 +403,35 @@ class webVarGSheet:
     headers = {"Content-Type": "application/json"}
     response = requests.post(self.url, data=json.dumps(x), headers=headers)
     return response.text
+
+
+
+###########################################################################################################################################################################
+# webVarGDrive class for storing data/variables to google drive in as a file
+# Creates file under misc/webVarGDrive folder in me@shresthaanil.com.np google drive
+###########################################################################################################################################################################
+import requests
+import json
+
+class webVarGDrive:
+  def __init__(self):
+    self.url = "https://script.google.com/macros/s/AKfycbwYvmNLEsQI-leTwUn-CcbF05qQY11_c3D357SMFSXWsZCMzn6Ppjd7uFv6pMyY7RTeBA/exec" # webVarGSheet script under me@shresthaanil.com.np
+    
+  def store(self, fileName, textContent):
+    x = {
+        "fileName" : fileName,
+        "textContent" : textContent
+        }
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.url, data=json.dumps(x), headers=headers)
+    return ''
+
+  def get(self, fileName):
+    x = {
+        "fileName" : fileName
+        }
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(self.url, data=json.dumps(x), headers=headers)
+    return response.text
