@@ -245,7 +245,7 @@ class encryptDecrypt:
     return base64.b64encode(key)
   
   def encrypt(self, message):
-    return self.fernet.encrypt(message.encode())
+    return self.fernet.encrypt(message.encode()).decode()
 
   def decrypt(self, message):
     return self.fernet.decrypt(message).decode()
